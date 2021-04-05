@@ -1,0 +1,11 @@
+{
+"push_user": "pushover token",
+"push_token": "pushover token",
+"blynk_token" : "blynk token",
+"terminal" : "29",
+"ip" : "192.168.1.228",
+"dns" : "http://yourdns", 
+"cam_web_port" : "13807", 
+"email" : "your email"
+}
+
