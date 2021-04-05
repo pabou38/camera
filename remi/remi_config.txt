@@ -1,0 +1,18 @@
+{
+"remi_port_lan" : "5010",
+"remi_port_wan" : "13805",
+"cam_web_port" : "13802",
+"cam_stream_port": "13801",
+"cam_admin_port": "13803",
+"monit_admin_port": "13804",
+"user" : "camera38",
+"passwd" : "you pass",
+"all_cam" : 
+ {
+  "1" : ["cam1" , "192.168.1.227", "http://yourdns"],
+  "2" : ["cam2" , "192.168.1.228", "http://yourdns"],
+  "3" : ["future1", "192.168.1.229", "dns"] ,
+  "4" : ["future2", "192.168.1.230", "dns"]
+ }
+
+}

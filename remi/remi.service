@@ -1,0 +1,49 @@
+# service file in /lib/systemd/system
+#sudo systemctl
+#        enable  toto.service
+#        disable
+#        status
+
+#        start/stop/kill
+#        restart/reload
+#        mask/umask
+#        list-unit-files --type service
+#        list-dependancies toto.service
+
+# type
+#  simple: does not fork. main process of service. systemd will immediatly proceed starting follow-up unit
+#  forking: fork. parent exit after starup and comm channel set up. child main daemon. recommended to use the PIDfile= systemd starts follow-up as soon as parent exit
+
+# ExecSop=  optional (eg clean termination) , after run, all remaining processes terminated according to KillMode
+#  default SIGTERM then SIGKILL after timeout
+# killMode= control-group, process, mixed, none
+#  process only main process
+# Restart=no, on-failure, on-abnormal, on-watchdog, on-abort, always
+# Exec
+#  absolute path name
+#  redirection, pipe, & not supported
+#ExecStart=/bin/sh -c '/apppath/appname > /filepath/filename 2>&1'
+#StandardOutput=null
+#StandardError=
+#Controls where file descriptor 1 (STDOUT) of the executed processes is connected to. 
+# one of inherit, null, tty, journal, syslog, kmsg, journal+console, syslog+console, kmsg+console or socket.
+
+[Unit]
+Description=GUI interface for camera v2.1
+After=network.target
+
+[Service]
+Type=simple
+#ExecStartPre=
+#ExecStart=/bin/sh -c '/opt/mystuf/myprog -r'
+ExecStart=/home/pi/remi/gui_remi.py
+ExecStop=pkill remi 
+#ExecStartPost=
+Killmode=process
+Restart=always
+RestartSec=15s
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
