@@ -6,3 +6,5 @@ Real time stream, timelapse, motion detection, alarm notification, system level 
 remi: GUI. runs on one of the raspberry
 
 monit: runs on all camera nodes
+
+https://pboudalier.medium.com/a-camera-for-snow-118f120a948d
