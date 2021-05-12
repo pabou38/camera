@@ -6,6 +6,7 @@
 # added: gui password does not use rpc
 #############################################
 
+# May 12: dynamic url based on cam definition
 
 
 version = 'Meaudre Robotics. version 2.1'
@@ -81,18 +82,17 @@ with open('/home/pi/remi/remi_config.txt' ,'r') as fp:
 	data = json.load(fp)
 
 
-
 #all_cam = {'cam1':'192.168.1.227' , 'future1': '192.168.1.228'}
 
+# dict key is cam name
 all_cam = {} # dict mapping cam name with local IP
 all_cam_wan = {} # dict mapping cam name with dns name
+all_cam_port = {} # dict mapping cam name with wan port
 
 """
 "all_cam" :
  {
-  "1" : ["talloires" , ["192.168.1.227", "camera_talloires.ddns.net"]],
-  "2" : ["future1", ["192.168.1.228", 'dns']] ,
-  "3" : ["future2", ["192.168.1.228", 'dns']]
+  "1" : ["talloires" , "192.168.1.227", "http://camera_talloires.ddns.net", '13801' ],
  }
 """
 
@@ -108,6 +108,9 @@ while True:
 
 		dns_name = x[2]
 		all_cam_wan[key] = dns_name
+
+		wan_port = x[3]
+		all_cam_port[key] = wan_port
 
 		i = i + 1
 
@@ -293,41 +296,47 @@ class remi_app(App):
 		self.l.append([self.slider2_label, self.slider2])
 
 
-		# links
-		# WARNING. not dynamic. change of cam with drop down does not change
-
+		# url links
+		# dynamic
+		# port are sequentials: stream, gallery, motion admin, monit
 		color = '#0000ff'
 		wl = w/4
 
+		base_port = all_cam_port[cam]
+		base_port = int(base_port)
+		print('wan base port: %d' %base_port)
+
 		# wan address must start with http, else will be front ended with local ip, port
-		stream_url = all_cam_wan[cam] + ':' + data["cam_stream_port"]
-		print ('link ', stream_url) 
+		stream_url = all_cam_wan[cam] + ':' + str(base_port)
 		self.link1 = gui.Link(stream_url, "stream", open_new_window=True, width=wl, height=30, margin='10px', \
 		style = { 'color' : color, 'font-weight' : 'bold', 'text-align' : 'center', 'font-size' : '20px'} )
 
 		# modif in library
-		print('updated library')
-
-		self.link1.set_url('titi')
-		print('get url ', self.link1.get_url())
-
+		#self.link1.set_url('titi')
+		#print('get url ', self.link1.get_url())
 		self.link1.set_url(stream_url)
-		print('get url ', self.link1.get_url())
+		print('get stream url ', self.link1.get_url())
 
-		web_url = all_cam_wan[cam] + ':' + data["cam_web_port"] + '/motion'
-		print ('link ', web_url) 
+		base_port = base_port + 1
+		web_url = all_cam_wan[cam] + ':' + str(base_port) + '/motion'
 		self.link2 = gui.Link(web_url, "gallery", width=wl, height=30, margin='10px', \
 		style = { 'color' : color, 'font-weight' : 'bold', 'text-align' : 'center', 'font-size' : '20px'} )
+		self.link2.set_url(web_url)
+		print('get web url ', self.link2.get_url())
 
-		admin_url = all_cam_wan[cam] + ':' + data["cam_admin_port"]
-		print ('link ', admin_url)
+		base_port = base_port + 1
+		admin_url = all_cam_wan[cam] + ':' + str(base_port)
 		self.link3 = gui.Link(admin_url, "admin", width=wl, height=30, margin='10px', \
 		style = { 'color' : color, 'font-weight' : 'bold', 'text-align' : 'center', 'font-size' : '20px'} )
+		self.link3.set_url(admin_url)
+		print('get admin url ', self.link3.get_url())
 
-		monit_url = all_cam_wan[cam] + ':' + data["monit_admin_port"]
-		print ('link ', monit_url)
+		base_port = base_port + 1
+		monit_url = all_cam_wan[cam] + ':' + str(base_port)
 		self.link4 = gui.Link(monit_url, "monit", width=wl, height=30, margin='10px', \
 		style = { 'color' : color, 'font-weight' : 'bold', 'text-align' : 'center', 'font-size' : '20px'} )
+		self.link4.set_url(monit_url)
+		print('get monit url ', self.link4.get_url())
 
 		self.links=gui.Container()
 		self.links.append([self.link1, self.link2, self.link3, self.link4])
@@ -648,19 +657,36 @@ class remi_app(App):
 
 		# update url links
 		# WARNING: need updated gui.py with new set_url
-		print('update link url'
-)
-		stream_url = all_cam_wan[cam] + ':' + data["cam_stream_port"]
+		print('update link url')
+
+		base_port = all_cam_port[cam]
+		base_port = int(base_port)
+		print('wan base port: %d' %base_port)
+
+		# wan address must start with http, else will be front ended with local ip, port
+		stream_url = all_cam_wan[cam] + ':' + str(base_port)
+
+		# modif in library
+		#self.link1.set_url('titi')
+		#print('get url ', self.link1.get_url())
 		self.link1.set_url(stream_url)
+		print('get stream url ', self.link1.get_url())
 
-		web_url = all_cam_wan[cam] + ':' + data["cam_web_port"] + '/motion'
+		base_port = base_port + 1
+		web_url = all_cam_wan[cam] + ':' + str(base_port) + '/motion'
 		self.link2.set_url(web_url)
+		print('get web url ', self.link2.get_url())
 
-		admin_url = all_cam_wan[cam] + ':' + data["cam_admin_port"]
+		base_port = base_port + 1
+		admin_url = all_cam_wan[cam] + ':' + str(base_port)
 		self.link3.set_url(admin_url)
+		print('get admin url ', self.link3.get_url())
 
-		monit_url = all_cam_wan[cam] + ':' + data["monit_admin_port"]
+		base_port = base_port + 1
+		monit_url = all_cam_wan[cam] + ':' + str(base_port)
 		self.link4.set_url(monit_url)
+		print('get monit url ', self.link4.get_url())
+
 
 
 	# set global values
